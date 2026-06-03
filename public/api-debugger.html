@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debugger</title>
+</head>
+<body>
+    <div>
+        <input name="url">
+        <select name="method">
+            <option>GET</option>
+            <option>POST</option>
+            <option>PUT</option>
+            <option>DELETE</option>
+        </select>
+        <textarea name="body"></textarea>
+        <button id="execute">Executar</button>
+    </div>
+    <pre id="result">Resultado arqui</pre>
+    <script>
+        const elUrl = document.querySelector('[name="url"]')
+        const elMethod = document.querySelector('[name="method"]')
+        const elBody = document.querySelector('[name="body"]')
+        const btExec = document.querySelector('#execute')
+        const result = document.querySelector('#result')
+        
+        btExec.addEventListener('click', async ev => {
+            const request = await fetch(elUrl.value, {
+                method: elMethod.value,
+                body: elBody.value.trim() === '' ? undefined : elBody.value,
+            })
+            const response = await request.text()
+            result.innerHTML = response
+        })
+    </script>
+</body>
+</html>
