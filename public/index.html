@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do</title>
+    <script type="module">
+        const form = document.querySelector('#add')
+        // const itemTemplate = document.querySelector("#itemTemplate")
+        
+        function createElementItem(elIndex, elTitle) {
+            const elClone = itemTemplate.content.cloneNode(true)
+            const title = clone.querySelector('span')
+            const delButton = clone.querySelector('button')
+            title.innerText = elTitle
+            title.dataset,ud = elIndex // abre brecha pra um hackin danado!!!
+            itemTemplate.parentElement.append(elClone)
+        }
+
+        createElementItem(0, "saaaaaaaaaaassss")
+
+        void async function() {
+            const response = await fetch('/todo')
+            const data = await response.json()
+            data.forEach((item, index) => createElementIndex(index, item.title))
+        }();
+
+        form.addEventListener('submit', async (ev) => {
+            ev.preventDefault()
+            ev.stopImmediatePropagation
+
+            const title = form.title.value
+            if(title.trim() === '')
+                return
+            const response = await fetch('/todo', {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({title})
+            })
+            createElementItem(-1, title)
+            form.title.value = ''
+        })
+    </script>
+</head>
+<body>
+    <form id="add">
+        <input name="title">
+        <button>add</button>
+    </form>
+    <ul>
+        <template>
+            <li>
+                <span>...</span>
+                <button>del</button>
+            </li>
+        </template>
+    </ul>
+</body>
+</html>
