@@ -1,5 +1,3 @@
-// Lydia Hallie : Event Loop
-
 /**
  * @todo
  * known issues:
@@ -36,10 +34,8 @@ class TodoList {
     const file = Bun.file(this.filePath)
     // const text = await file.text()
     // const data = JSON.parse(text)
-    const data = await file.json()
-    const items: Item[] = data.map((v: any) => {
-      return new Item(v.title)
-    })
+    const data = await file.json() as Item[]
+    const items = data.map((v: any) => new Item(v.title))
     return items
   }
 
@@ -48,12 +44,13 @@ class TodoList {
    */
   async addItem(item: Item) {
     const items = await this.items
-    if (!item) 
+    if (!item)
       throw 'item não pode ser nulo ou indefinido'
     if (!item.title || !item.title.trim()) 
       throw 'item.title não pode ser nulo ou indefinido'
     items.push(item)
     await this.saveListToDisk()
+    return items.length - 1
   }
 
   /**
@@ -61,6 +58,8 @@ class TodoList {
    */
   async removeItem(index: number) {
     const items = await this.items
+    if (!items[index]) 
+      throw `Item de index ${index} não existe`
     items.splice(index, 1)
     await this.saveListToDisk()
   }

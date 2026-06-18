@@ -1,59 +1,71 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang='pt-BR'>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do</title>
-    <script type="module">
-        const form = document.querySelector('#add')
-        // const itemTemplate = document.querySelector("#itemTemplate")
-        
-        function createElementItem(elIndex, elTitle) {
-            const elClone = itemTemplate.content.cloneNode(true)
-            const title = clone.querySelector('span')
-            const delButton = clone.querySelector('button')
-            title.innerText = elTitle
-            title.dataset,ud = elIndex // abre brecha pra um hackin danado!!!
-            itemTemplate.parentElement.append(elClone)
-        }
+  <meta charset='utf-8'>
+  <title>To-Do</title>
+  <script type="module">
+    // const elCreateForm = document.querySelector("#elCreateForm")
 
-        createElementItem(0, "saaaaaaaaaaassss")
+    function createItemElement(index, title) {
+      const clone = elItemTemplate.content.cloneNode(true)
+      const elTitle = clone.querySelector('span')
+      const elBtDelete = clone.querySelector('button')
+      elTitle.innerText = title
+      // elBtDelete.dataset.index = index // abre uma brecha gigantesca pra HACKING
+      elBtDelete.addEventListener('click', async () => {
+        elBtDelete.setAttribute("disabled", true)
+        const request = await fetch(`/todo/${index}`, { method: "DELETE" })
+        if (request.ok)
+          return elBtDelete.closest('li').remove()
+        // caso de erro
+        elBtDelete.removeAttribute("disabled")
+        const resp = await request.text()
+        alert(`Erro: ${resp}`)
+      })
+      elItemTemplate.parentElement.append(clone)
+    }
 
-        void async function() {
-            const response = await fetch('/todo')
-            const data = await response.json()
-            data.forEach((item, index) => createElementIndex(index, item.title))
-        }();
+    void async function () {
+      const request = await fetch("/todo")
+      const items = await request.json()
+      items.forEach((item, index) => createItemElement(index, item.title))
+    }();
 
-        form.addEventListener('submit', async (ev) => {
-            ev.preventDefault()
-            ev.stopImmediatePropagation
+    elCreateForm.addEventListener('submit', async (ev) => {
+      ev.preventDefault()
+      const title = elCreateForm.elTite.value
+      if (title.trim() === "") return
+      elCreateForm.fields.setAttribute('disabled', true)
+      const request = await fetch("/todo", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ title })
+      })
+      const { index } = await request.json()
+      elCreateForm.fields.removeAttribute('disabled')
+      createItemElement(index, title)
+      elCreateForm.elTite.value = ''
+    })
 
-            const title = form.title.value
-            if(title.trim() === '')
-                return
-            const response = await fetch('/todo', {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({title})
-            })
-            createElementItem(-1, title)
-            form.title.value = ''
-        })
-    </script>
+  </script>
 </head>
+
 <body>
-    <form id="add">
-        <input name="title">
-        <button>add</button>
-    </form>
-    <ul>
-        <template>
-            <li>
-                <span>...</span>
-                <button>del</button>
-            </li>
-        </template>
-    </ul>
+  <form id="elCreateForm">
+    <fieldset name="fields">
+      <input name="elTite">
+      <button name="elCreate">adicionar</button>
+    </fieldset>
+  </form>
+  <ul>
+    <template id="elItemTemplate">
+      <li>
+        <button>del</button>
+        <span>...</span>
+      </li>
+    </template>
+  </ul>
 </body>
+
 </html>
